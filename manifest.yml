@@ -1,0 +1,8 @@
+applications:
+- host: helios
+  disk: 1024M
+  name: helios
+  path: .
+  domain: ng.bluemix.net
+  mem: 128M
+  instances: 1
