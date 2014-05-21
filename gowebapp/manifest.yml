@@ -1,8 +1,9 @@
+---
 applications:
-- host: helios
-  disk: 1024M
-  name: helios
-  path: .
+- name: helios
+  memory: 32M
   domain: ng.bluemix.net
-  mem: 128M
   instances: 1
+  host: helios
+  path: .
+  buildpack: https://github.com/michaljemala/cloudfoundry-buildpack-go 
