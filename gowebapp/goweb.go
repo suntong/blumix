@@ -1,6 +1,7 @@
 package main
 
 import (
+  "gowebapp/echo"
 	"html/template"
 	"net/http"
 	"log"
@@ -22,59 +23,12 @@ func main() {
     port = DEFAULT_PORT
   }
 
-  init_goweb()
-  init_echo()
+  Init_goweb()
+  echo.Init_echo()
   
   log.Printf("Starting GoWeb on port %+v\n", port)
   http.ListenAndServe(":" + port, nil)
 }
-
-/////////////////////////////////////////////////////
-// Simple Go Echo Server
-// http://blog.roomanna.com/05-20-2011/simple-go-server
-// https://github.com/kurrik/appengine-samples/blob/master/go-echo/echo/echo.go
-
-func init_echo() {
-  http.HandleFunc("/dest", posthandler)
-  http.HandleFunc("/echoform", formhandler)
-}
-
-
-func formhandler (w http.ResponseWriter, r *http.Request) {
-  fmt.Fprint(w, `<!DOCTYPE html>
-<html>
-<body>
-<form method="POST" action="/dest">
-<input type="text" name="content" placeholder="Put content here" />
-<button>Submit</button>
-</form>
-</body>
-</html>`)
-}
-
-func posthandler (w http.ResponseWriter, r *http.Request) {
-  data := map[string] interface{} {
-    "Content": r.FormValue("content"),
-    "Host": r.Host,
-  }
-  
-  if err := postTemplate.Execute(w, data); err != nil {
-    http.Error(w, err.Error(), http.StatusInternalServerError)
-  }
-}
-
-var postTemplate = template.Must(template.New("post").Parse(postTemplateHTML))
-const postTemplateHTML = `
-<!DOCTYPE html>
-<html>
-<body>
-Post Content: {{.Content}}<br />
-Host: {{.Host}}<br />
-
-<p/><a href="/">Back home</a>
-</body>
-</html>`
-
 
 /////////////////////////////////////////////////////
 // Go Sample App for BlueMix
@@ -115,7 +69,7 @@ var resultsTemplate = template.Must(template.ParseFiles("templates/results.html"
 var primesHeaderTemplate = template.Must(template.New("header").Parse(primesHeader))
 var primesFooterTemplate = template.Must(template.New("footer").Parse(primesFooter))
 
-func init_goweb() {
+func Init_goweb() {
   http.HandleFunc("/primefactors", primeFactorsHandler)
   http.HandleFunc("/primenumbers", primeNumbersHandler)
   http.HandleFunc("/", publicHandler)
