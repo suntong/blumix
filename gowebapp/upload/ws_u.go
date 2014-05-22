@@ -1,14 +1,26 @@
-package main
+/////////////////////////////////////////////////////
+// Simple Go Upload Server
+// initially from https://github.com/ljgww/web_server_example_in_Go_-golang-
 
-import "net/http"
-import "html/template"
-import "io"
-import "io/ioutil"
+package upload
 
-var uploadTemplate, _ = template.ParseFiles("upload.html")
-var errorTemplate, _ = template.ParseFiles("error.html")
+import (
+  "net/http"
+  "html/template"
+  "io"
+  "io/ioutil"
+	"log"
+)
+
+var uploadTemplate, _ = template.ParseFiles("upload/upload.html")
+var errorTemplate, _ = template.ParseFiles("upload/error.html")
 
 func check(err error) { if err != nil { panic(err) } }
+
+func Init_upload() {
+    http.HandleFunc("/upload", errorHandler(upload))
+    http.HandleFunc("/view", errorHandler(view))
+}
 
 func errorHandler(fn http.HandlerFunc) http.HandlerFunc {
     return func(w http.ResponseWriter, r *http.Request) {
@@ -23,28 +35,27 @@ func errorHandler(fn http.HandlerFunc) http.HandlerFunc {
 }
 
 func upload(w http.ResponseWriter, r *http.Request) {
-    if r.Method != "POST" {
-        uploadTemplate.Execute(w, nil)
-        return
-    }
+  if r.Method != "POST" {
+    uploadTemplate.Execute(w, nil)
+    return
+  }
+  
+  log.Println(">> Upload Handler")
+  defer log.Println("<< Upload Handler")
+
 	f, _, err := r.FormFile("image")
-    check(err)
-    defer f.Close()
-    t, err := ioutil.TempFile("./", "image-")
-    check(err)
-    defer t.Close()
-    _, err = io.Copy(t, f)
-    check(err)
-    http.Redirect(w, r, "/view?id="+t.Name()[6:], 302)
+  check(err)
+  defer f.Close()
+  t, err := ioutil.TempFile("./uploading/", "image-")
+  check(err)
+  defer t.Close()
+  _, err = io.Copy(t, f)
+  check(err)
+  http.Redirect(w, r, "/view?id="+t.Name()[16:], 302)
 }
 
 func view(w http.ResponseWriter, r *http.Request) {
     w.Header().Set("Content-Type", "image")
-    http.ServeFile(w, r, "image-"+r.FormValue("id"))
+    http.ServeFile(w, r, "uploading/image-"+r.FormValue("id"))
 }
 
-func main() {
-    http.HandleFunc("/", errorHandler(upload))
-    http.HandleFunc("/view", errorHandler(view))
-    http.ListenAndServe(":8080", nil)
-}

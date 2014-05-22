@@ -2,6 +2,7 @@ package main
 
 import (
   "gowebapp/echo"
+  "gowebapp/upload"
 	"html/template"
 	"net/http"
 	"log"
@@ -25,6 +26,7 @@ func main() {
 
   Init_goweb()
   echo.Init_echo()
+  upload.Init_upload()
   
   log.Printf("Starting GoWeb on port %+v\n", port)
   http.ListenAndServe(":" + port, nil)
