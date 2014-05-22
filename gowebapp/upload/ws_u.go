@@ -18,8 +18,13 @@ var errorTemplate, _ = template.ParseFiles("upload/error.html")
 func check(err error) { if err != nil { panic(err) } }
 
 func Init_upload() {
-    http.HandleFunc("/upload", errorHandler(upload))
-    http.HandleFunc("/view", errorHandler(view))
+  http.HandleFunc("/upload", errorHandler(upload))
+  http.HandleFunc("/view", errorHandler(view))
+
+  fileServerPrefix := "/ul/"
+  fileServer := http.StripPrefix(fileServerPrefix,
+    http.FileServer(http.Dir("./uploading/")))
+  http.Handle(fileServerPrefix, fileServer)
 }
 
 func errorHandler(fn http.HandlerFunc) http.HandlerFunc {
