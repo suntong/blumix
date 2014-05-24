@@ -1,8 +1,9 @@
+// http://golang.org/misc/goplay/goplay.go
 // Copyright 2010 The Go Authors.  All rights reserved.
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package main
+package goplay
 
 import (
 	"bytes"
@@ -28,7 +29,7 @@ var (
 	uniq = make(chan int)
 )
 
-func main() {
+func Init_goplay() {
 	flag.Parse()
 
 	// source of unique numbers
@@ -38,9 +39,8 @@ func main() {
 		}
 	}()
 
-	http.HandleFunc("/", FrontPage)
+	http.HandleFunc("/gp", FrontPage)
 	http.HandleFunc("/compile", Compile)
-	log.Fatal(http.ListenAndServe(*httpListen, nil))
 }
 
 // FrontPage is an HTTP handler that renders the goplay interface.
@@ -48,6 +48,9 @@ func main() {
 // its contents will be put in the interface's text area.
 // Otherwise, the default "hello, world" program is displayed.
 func FrontPage(w http.ResponseWriter, req *http.Request) {
+  log.Println(">> goplay")
+  defer log.Println("<< goplay")
+
 	data, err := ioutil.ReadFile(req.URL.Path[1:])
 	if err != nil {
 		data = helloWorld
