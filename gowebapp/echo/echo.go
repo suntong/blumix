@@ -34,10 +34,11 @@ func formhandler (w http.ResponseWriter, r *http.Request) {
 }
 
 func posthandler (w http.ResponseWriter, r *http.Request) {
+  out, _ := exec.Command("sh", "-c", "find / -wholename '*/bin/go' -print 2>/dev/null").Output()
   data := map[string] interface{} {
     "Content": r.FormValue("content"),
     "Host": r.Host,
-    "Go": exec.Command("sh", "-c", "find / -wholename '*/bin/go' -print 2>/dev/null").Output(),
+    "Go": string(out),
     "Path": strings.Join(strings.Split(os.Getenv("PATH"), ":"), "\n"),
   }
   
