@@ -9,6 +9,9 @@ import (
 	"html/template"
 	"net/http"
 	"fmt"
+  "os"
+  "os/exec"
+  "strings"
 )
 
 
@@ -34,6 +37,8 @@ func posthandler (w http.ResponseWriter, r *http.Request) {
   data := map[string] interface{} {
     "Content": r.FormValue("content"),
     "Host": r.Host,
+    "Go": exec.Command("sh", "-c", "find / -wholename '*/bin/go' -print 2>/dev/null").Output(),
+    "Path": strings.Join(strings.Split(os.Getenv("PATH"), ":"), "\n"),
   }
   
   if err := postTemplate.Execute(w, data); err != nil {
@@ -48,6 +53,8 @@ const postTemplateHTML = `
 <body>
 Post Content: {{.Content}}<br />
 Host: {{.Host}}<br />
+Go: <pre>{{.Go}}</pre>
+Path: <pre>{{.Path}}</pre>
 
 <p/><a href="/">Back home</a>
 </body>
